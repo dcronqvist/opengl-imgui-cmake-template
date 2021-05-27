@@ -8,5 +8,5 @@
 #include <cerrno>
 using namespace std;
 
-std::string ReadFile(std::string file, bool addLineTerminator = false);
+bool ReadFile(std::string file, std::string& fileContents, bool addLineTerminator = false);
 long GetFileModTime(std::string file);

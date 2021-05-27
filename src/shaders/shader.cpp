@@ -69,8 +69,20 @@ Shader Shader::LoadShader(std::string fileVertexShader, std::string fileFragment
     bool anyError = false;
 
     // Reads the code from the shader files
-    const std::string vertexCode = ReadFile(fileVertexShader, true);
-    const std::string fragmentCode = ReadFile(fileFragmentShader, true);
+    std::string vertexCode;
+    if (!ReadFile(fileVertexShader, vertexCode, true)) {
+        std::cout << "ERROR::SHADER::VERTEX(" << fileVertexShader << ")::FILE_NOT_FOUND" << std::endl;
+        anyError = true;
+    }
+    std::string fragmentCode;
+    if (!ReadFile(fileFragmentShader, fragmentCode, true)) {
+        std::cout << "ERROR::SHADER::FRAGMENT(" << fileVertexShader << ")::FILE_NOT_FOUND" << std::endl;
+        anyError = true;
+    }
+
+    if (anyError) {
+        return Shader{};
+    }
 
     // Turns them into c-strings
     const char* vertexCodeCstr = vertexCode.c_str();

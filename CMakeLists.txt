@@ -17,4 +17,4 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(opengl-imgui-cmake-template PRIVATE ${OPENGL_gl_LIBRARY})
 target_link_libraries(opengl-imgui-cmake-template PRIVATE glfw3)
 
-file(COPY resources DESTINATION resources)
+file(COPY resources DESTINATION /)
