@@ -1,0 +1,116 @@
+#include "shaders/shader.hpp"
+#include "utils/utility.hpp"
+
+Shader::Shader() {
+
+}
+
+void Shader::Unload() {
+    // Delete the current shader and remove from memory
+    glDeleteProgram(this->programID);
+}
+
+void Shader::ReloadFromFile() {
+    // Get the current modified time for the fragment shader file
+    long currentModTime = GetFileModTime(this->fragmentFile);
+
+    // If the current modified time is LATER than the previously set modified time
+    if (currentModTime > fragmentModTimeOnLoad) {
+        // Unload current shader
+        this->Unload();
+
+        // Load new shader using the same files, however, the fragment file 
+        // will contain new code this time
+        Shader s = Shader::LoadShader(this->vertexFile, this->fragmentFile);
+
+        // Discard newly loaded shader, but persist the shader program id it created during loading
+        this->programID = s.programID;
+        // Set the latest fragment file modified time to the current time
+        this->fragmentModTimeOnLoad = currentModTime;
+    }
+}
+
+bool Shader::CompileShader(unsigned int shaderId, char(&infoLog)[512]) {
+    // This assumes that you have already appended the source code to the shader
+    // Attempts to compile the shader
+    glCompileShader(shaderId);
+
+    // Get the compile status from the shader
+    int success;
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        // If it didn't succeed, then fill infoLog with error msg.
+        glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
+    }
+
+    // If the compilation succeeded, return true
+    return success > 0;
+}
+
+bool Shader::LinkProgram(unsigned int programID, char(&infoLog)[512]) {
+    // Assumes that all shaders are attached prior to linking
+    glLinkProgram(programID);
+
+    // Get the link status from the program
+    int success;
+    glGetProgramiv(programID, GL_LINK_STATUS, &success);
+    if (!success) {
+
+        // If it didn't succeed in linking, get the error msg and put in infoLog
+        glGetProgramInfoLog(programID, 512, NULL, infoLog);
+    }
+
+    // Return true if success
+    return success > 0;
+}
+
+Shader Shader::LoadShader(std::string fileVertexShader, std::string fileFragmentShader) {
+    // Bool for checking if at any point during loading it failed 
+    bool anyError = false;
+
+    const std::string vertexCode = ReadFile(fileVertexShader, true);
+    const std::string fragmentCode = ReadFile(fileFragmentShader, true);
+
+    const char* vertexCodeCstr = vertexCode.c_str();
+    const char* fragmentCodeCstr = fragmentCode.c_str();
+
+    unsigned int vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+
+    glShaderSource(vertexShaderId, 1, &vertexCodeCstr, NULL);
+    glShaderSource(fragmentShaderId, 1, &fragmentCodeCstr, NULL);
+
+    char infoLog[512];
+    if (!Shader::CompileShader(vertexShaderId, infoLog)) {
+        std::cout << "ERROR::SHADER::VERTEX(" << fileVertexShader << ")::COMPILATION_FAILED\n" << infoLog << std::endl;
+        anyError = true;
+    }
+    if (!Shader::CompileShader(fragmentShaderId, infoLog)) {
+        std::cout << "ERROR::SHADER::FRAGMENT(" << fileFragmentShader << ")::COMPILATION_FAILED\n" << infoLog << std::endl;
+        anyError = true;
+    }
+
+    unsigned int programID = glCreateProgram();
+    glAttachShader(programID, vertexShaderId);
+    glAttachShader(programID, fragmentShaderId);
+
+    if (!Shader::LinkProgram(programID, infoLog)) {
+        std::cout << "ERROR::SHADER::LINKING(" << fileVertexShader << " + " << fileFragmentShader << ")::LINKING_FAILED\n" << infoLog << std::endl;
+        anyError = true;
+    }
+
+    glDeleteShader(vertexShaderId);
+    glDeleteShader(fragmentShaderId);
+
+    Shader s;
+    s.fragmentModTimeOnLoad = GetFileModTime(fileFragmentShader);
+    s.programID = programID;
+    s.vertexFile = fileVertexShader;
+    s.fragmentFile = fileFragmentShader;
+
+    if (!anyError) {
+        std::cout << "INFO::SHADER[" << s.programID << "](" << fileVertexShader << " + " << fileFragmentShader << ")::SUCCESSFULLY_LOADED" << std::endl;
+    }
+
+    return s;
+}
