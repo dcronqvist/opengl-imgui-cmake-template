@@ -4,7 +4,9 @@ A quick and easy way to get started using OpenGL 3.3 Core Profile together with 
 
 This template only contains a wrapper class for shaders, and one for the window with appropriate `Initialize/LoadContent/Update/Render` as a game loop.
 
-The shader class allows for **hot-reloading** of the fragment shader, so whenever you modify the `testing.fs` file, the shader will automagically be reloaded! 
+The shader class allows for **hot-reloading** of the fragment shader, so whenever you modify the `testing.fs` file in the `build/resources/shaders/` directory, the shader will automagically be reloaded! 
+
+**NOTE:** The shader files in `resources/shaders/` are copied into the `build/` directory upon build, so if you want to save your hot-reloaded changes, then you must also modify the shaders in `resources/shaders/` directory.
 
 ## Getting started
 

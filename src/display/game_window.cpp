@@ -37,7 +37,7 @@ void GameWindow::LoadContent() {
     std::cout << "INFO::IMGUI::SUCCESSFULLY_INITIALIZED" << std::endl;
 
     // Load the template shader
-    s = Shader::LoadShader("../resources/shaders/testing.vs", "../resources/shaders/testing.fs");
+    s = Shader::LoadShader("resources/shaders/testing.vs", "resources/shaders/testing.fs");
 
     // Vertices needed for a square
     float vertices[] = {

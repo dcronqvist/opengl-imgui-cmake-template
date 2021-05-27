@@ -11,8 +11,10 @@ include_directories(libs/glfw)
 include_directories(include)
 
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-add_executable(cpp-opengl ${SOURCES})
+add_executable(opengl-imgui-cmake-template ${SOURCES})
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(cpp-opengl PRIVATE ${OPENGL_gl_LIBRARY})
-target_link_libraries(cpp-opengl PRIVATE glfw3)
+target_link_libraries(opengl-imgui-cmake-template PRIVATE ${OPENGL_gl_LIBRARY})
+target_link_libraries(opengl-imgui-cmake-template PRIVATE glfw3)
+
+file(COPY resources DESTINATION resources)
