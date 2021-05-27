@@ -25,21 +25,27 @@ int BaseWindow::Run() {
         glfwTerminate();
         return -1;
     }
+
+    // Set opengl context
     glfwMakeContextCurrent(windowHandle);
 
+    // Attempt to load using glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
     std::cout << "INFO::WINDOW::SUCCESSFULLY_INITIALIZED" << std::endl;
 
+    // Runs load content which might include stuff that requires an opengl context
     LoadContent();
 
+    // Main game loop
     while (!glfwWindowShouldClose(windowHandle)) {
         Update();
         Render();
     }
 
+    // Unload and destroy 
     Unload();
     glfwDestroyWindow(windowHandle);
     glfwTerminate();

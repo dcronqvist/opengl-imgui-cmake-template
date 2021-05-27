@@ -68,46 +68,59 @@ Shader Shader::LoadShader(std::string fileVertexShader, std::string fileFragment
     // Bool for checking if at any point during loading it failed 
     bool anyError = false;
 
+    // Reads the code from the shader files
     const std::string vertexCode = ReadFile(fileVertexShader, true);
     const std::string fragmentCode = ReadFile(fileFragmentShader, true);
 
+    // Turns them into c-strings
     const char* vertexCodeCstr = vertexCode.c_str();
     const char* fragmentCodeCstr = fragmentCode.c_str();
 
+    // Create vertex and fragment shader
     unsigned int vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     unsigned int fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
+    // Attach the shader code to its shader
     glShaderSource(vertexShaderId, 1, &vertexCodeCstr, NULL);
     glShaderSource(fragmentShaderId, 1, &fragmentCodeCstr, NULL);
 
+    // Attempt to compile the vertex shader
     char infoLog[512];
     if (!Shader::CompileShader(vertexShaderId, infoLog)) {
         std::cout << "ERROR::SHADER::VERTEX(" << fileVertexShader << ")::COMPILATION_FAILED\n" << infoLog << std::endl;
         anyError = true;
     }
+    // Attempt to compile the fragment shader
     if (!Shader::CompileShader(fragmentShaderId, infoLog)) {
         std::cout << "ERROR::SHADER::FRAGMENT(" << fileFragmentShader << ")::COMPILATION_FAILED\n" << infoLog << std::endl;
         anyError = true;
     }
 
+    // Create a shader program
     unsigned int programID = glCreateProgram();
+
+    // Attach both the vertex and fragment shader to the program
     glAttachShader(programID, vertexShaderId);
     glAttachShader(programID, fragmentShaderId);
 
+    // Attempt to link the vertex and fragment shaders
     if (!Shader::LinkProgram(programID, infoLog)) {
         std::cout << "ERROR::SHADER::LINKING(" << fileVertexShader << " + " << fileFragmentShader << ")::LINKING_FAILED\n" << infoLog << std::endl;
         anyError = true;
     }
 
+    // After linking, we no longer need the individual shaders
     glDeleteShader(vertexShaderId);
     glDeleteShader(fragmentShaderId);
 
+    // Create a shader instance and fill with newly created values
     Shader s;
     s.fragmentModTimeOnLoad = GetFileModTime(fileFragmentShader);
     s.programID = programID;
     s.vertexFile = fileVertexShader;
     s.fragmentFile = fileFragmentShader;
 
+    // If we at any point did NOT get an error, then we say that it loaded successfully
     if (!anyError) {
         std::cout << "INFO::SHADER[" << s.programID << "](" << fileVertexShader << " + " << fileFragmentShader << ")::SUCCESSFULLY_LOADED" << std::endl;
     }
