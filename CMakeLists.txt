@@ -1,20 +1,33 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(opengl-imgui-cmake-template VERSION 0.1.0)
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+cmake_minimum_required(VERSION 3.29)
+project(opengl-imgui-cmake-template VERSION 0.0.1 LANGUAGES CXX)
 
-link_directories(libs/glfw)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(libs/glad)
-include_directories(libs/KHR)
-include_directories(libs/imgui)
-include_directories(libs/glfw)
-include_directories(include)
+# Add the CMakeModules directory to the module path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules")
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-add_executable(opengl-imgui-cmake-template ${SOURCES})
+# Include some custom CMake modules
+include(vscode-debug)
 
-find_package(OpenGL REQUIRED)
-target_link_libraries(opengl-imgui-cmake-template PRIVATE ${OPENGL_gl_LIBRARY})
-target_link_libraries(opengl-imgui-cmake-template PRIVATE glfw3)
+# Find GLFW using the custom FindGLFW.cmake module
+find_package(GLFW REQUIRED)
+find_package(GLAD REQUIRED)
 
-file(COPY resources DESTINATION /)
+# Add the executable
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
+target_sources(${PROJECT_NAME} PRIVATE src/main.cpp)
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+  include
+  ${GLAD_INCLUDE_DIRS}
+  ${GLFW_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+  ${GLFW_LIBRARIES}
+  ${GLAD_LIBRARIES}
+)
+
+make_target_debuggable_in_vscode(${PROJECT_NAME})
