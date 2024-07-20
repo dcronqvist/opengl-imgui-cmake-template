@@ -16,22 +16,22 @@ else
 	RM := rm -rf
 endif
 
-DEBUG_PRESET := debug-$(PLATFORM)
+DEBUG_PRESET := vscode-$(PLATFORM)-debug
 RELEASE_PRESET := release-$(PLATFORM)
 
 .PHONY: build
-build: build/release/CMakeCache.txt
+build: #build/release/CMakeCache.txt
 	cmake --build --preset $(RELEASE_PRESET)
 
-build/release/CMakeCache.txt:
-	cmake --preset $(RELEASE_PRESET)
+# build/release/CMakeCache.txt:
+# 	cmake --preset $(RELEASE_PRESET)
 
 .PHONY: build-debug
-build-debug: build/debug/CMakeCache.txt
+build-debug: #build/debug/CMakeCache.txt
 	cmake --build --preset $(DEBUG_PRESET)
 
-build/debug/CMakeCache.txt:
-	cmake --preset $(DEBUG_PRESET)
+# build/debug/CMakeCache.txt:
+# 	cmake --preset $(DEBUG_PRESET)
 
 .PHONY: run
 run: build
@@ -39,7 +39,7 @@ run: build
 
 .PHONY: debug
 debug: build-debug
-	cmake --build ./build --target vscode_debug_opengl-imgui-cmake-template
+	cmake --build ./build/debug --target vscode_debug_opengl-imgui-cmake-template
 
 .PHONY: clean
 clean:

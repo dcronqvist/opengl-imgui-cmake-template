@@ -17,7 +17,7 @@
     },
     {
       "name": "ninja-release",
-      "hidden": true,
+      "hidden": false,
       "generator": "Ninja",
       "binaryDir": "build/release",
       "cacheVariables": {
@@ -25,26 +25,54 @@
       }
     },
     {
-      "inherits": "ninja-debug",
-      "name": "debug-win",
-      "hidden": false
+      "name": "makefiles-debug",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "binaryDir": "build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
     },
     {
-      "inherits": "ninja-release",
-      "name": "release-win",
-      "hidden": false
+      "name": "makefiles-release",
+      "hidden": false,
+      "generator": "Unix Makefiles",
+      "binaryDir": "build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "inherits": "ninja-debug",
+      "name": "vscode-win-debug",
+      "hidden": false,
+      "cacheVariables": {
+        "VSCODE_DEBUG_JSON_TYPE": "cppvsdbg",
+        "VSCODE_DEBUG_JSON_MIMODE": null
+      }
+    },
+    {
+      "inherits": "makefiles-debug",
+      "name": "vscode-mac-debug",
+      "hidden": false,
+      "cacheVariables": {
+        "VSCODE_DEBUG_JSON_TYPE": "cppdbg",
+        "VSCODE_DEBUG_JSON_MIMODE": "lldb"
+      }
     }
   ],
   "buildPresets": [
     {
-      "name": "debug-win",
+      "name": "vscode-win-debug",
       "hidden": false,
-      "configurePreset": "debug-win"
+      "configurePreset": "vscode-win-debug",
+      "jobs": 4
     },
     {
-      "name": "release-win",
+      "name": "vscode-mac-debug",
       "hidden": false,
-      "configurePreset": "release-win"
+      "configurePreset": "vscode-mac-debug",
+      "jobs": 4
     }
   ]
 }

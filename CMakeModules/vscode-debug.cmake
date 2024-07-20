@@ -3,22 +3,30 @@ function(urlencode input output_variable)
   string(LENGTH "${hex}" length)
   math(EXPR last "${length} - 1")
   set(result "")
+
   foreach(i RANGE ${last})
     math(EXPR even "${i} % 2")
+
     if("${even}" STREQUAL "0")
       string(SUBSTRING "${hex}" "${i}" 2 char)
       string(APPEND result "%${char}")
     endif()
   endforeach()
+
   set("${output_variable}" ${result} PARENT_SCOPE)
 endfunction()
 
 # This function creates a custom target called vscode_debug_${target} that will launch the debugger in VSCode when run
 function(make_target_debuggable_in_vscode target)
   set(TARGET_OUT "${CMAKE_CURRENT_BINARY_DIR}/${target}${CMAKE_EXECUTABLE_SUFFIX}")
-  set(VSCODE_DEBUG_ARGS 
-    "{\"type\":\"cppvsdbg\",\"request\":\"launch\",\"program\":\"${TARGET_OUT}\",\"cwd\":\"${CMAKE_CURRENT_LIST_DIR}\",\"just_my_code\":false,\"args\":[]}"
+
+  # CMakePreset should define
+  # VSCODE_DEBUG_JSON_TYPE = (cppvsdbg|cppdbg)
+  # VSCODE_DEBUG_JSON_MIMODE = (null|lldb)
+  set(VSCODE_DEBUG_ARGS
+    "{\"type\":\"${VSCODE_DEBUG_JSON_TYPE}\",\"MIMode\":\"${VSCODE_DEBUG_JSON_MIMODE}\",\"request\":\"launch\",\"program\":\"${TARGET_OUT}\",\"cwd\":\"${CMAKE_CURRENT_LIST_DIR}\",\"just_my_code\":false,\"args\":[]}"
   )
+
   urlencode("${VSCODE_DEBUG_ARGS}" VSCODE_DEBUG_ARGS_ENCODED)
 
   find_program(POWERSHELL_PATH NAMES pwsh)

@@ -11,8 +11,8 @@ void processInput(GLFWwindow *window);
 int main() {
   // Initialize GLFW
   glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
@@ -67,7 +67,7 @@ int main() {
     processInput(window);
 
     // Rendering commands here
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // Set clear color to blue
+    glClearColor(0.0f, 1.0f, 1.0f, 1.0f); // Set clear color to blue
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Check and call events and swap the buffers

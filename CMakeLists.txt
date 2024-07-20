@@ -16,18 +16,22 @@ find_package(GLFW REQUIRED)
 find_package(GLAD REQUIRED)
 
 # Add the executable
+set(${PROJECT_NAME}_SOURCES
+  src/main.cpp
+)
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
-target_sources(${PROJECT_NAME} PRIVATE src/main.cpp)
 
-target_include_directories(${PROJECT_NAME} PRIVATE 
+target_include_directories(${PROJECT_NAME} PRIVATE
   include
   ${GLAD_INCLUDE_DIRS}
   ${GLFW_INCLUDE_DIRS}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE
   ${GLFW_LIBRARIES}
   ${GLAD_LIBRARIES}
 )
 
-make_target_debuggable_in_vscode(${PROJECT_NAME})
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  make_target_debuggable_in_vscode(${PROJECT_NAME})
+endif()
